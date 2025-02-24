@@ -1,5 +1,7 @@
 # Ignore virtual environment
 venv/
+env/
+*.env
 
 # Ignore Python cache and compiled files
 __pycache__/
@@ -17,6 +19,15 @@ Thumbs.db
 .env
 credentials/*
 token.json
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# Ignore YAML and configuration files (commonly sensitive)
+*.yml
+*.yaml
 
 # Ignore build and distribution files
 build/
@@ -25,7 +36,28 @@ dist/
 
 # Ignore editor and IDE settings
 .vscode/
+.idea/
 
 # Ignore results and uploads if they are generated at runtime
 results/*
 uploads/*
+
+# Ignore Docker-related files
+docker-compose.override.yml
+
+# Ignore database and SQL files
+*.db
+*.sqlite
+*.sql
+
+# Ignore backup files
+*~
+*.bak
+
+# Ignore temporary editor files
+*.swp
+*.swo
+*.bak
+
+# Ignore SASS/SCSS cache
+.sass-cache/

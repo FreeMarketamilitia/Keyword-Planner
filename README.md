@@ -59,7 +59,7 @@ Welcome to the **Keyword Planner**, a Flask-powered beast that’s here to kick 
 #### tl:dr
 
 ```bash 
-pip install fmmKeywordPlanner
+pip install Keyword-Kraken
  ```
 
 1. **Clone the Repository**
@@ -132,7 +132,7 @@ pip install fmmKeywordPlanner
 
 ## Configuration: Tweak It, Geek It! 🔧
 
-Edit `.env` per [API_SETUP.md](API_SETUP.md). Here’s the VIP table:
+Edit `.env` per [API_SETUP.md](API_SETUP_README.md). Here’s the VIP table:
 
 | **Variable**              | **What It Does**                          |
 |---------------------------|-------------------------------------------|

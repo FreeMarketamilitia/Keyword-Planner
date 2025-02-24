@@ -1,3 +1,4 @@
+# Include important project files
 include README.md
 include LICENSE
 include requirements.txt
@@ -6,6 +7,7 @@ include competitor_urls.json
 include main.py
 include setup.py
 
+# Include static and template directories recursively
 recursive-include static *
 recursive-include templates *
 

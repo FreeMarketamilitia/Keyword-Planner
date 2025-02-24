@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Keyword-Kraken',  # Name of the package
-    version='1.0',  # Version of the package
+    version='1.0.1',  # Version of the package
     description='Keyword Kraken: A powerful SEO tool for keyword analysis, SERP tracking, and trend predictions, with a touch of Kraken-powered magic.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
