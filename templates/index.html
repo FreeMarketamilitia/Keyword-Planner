@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <br>
+<head>
+  <meta charset="UTF-8">
+  <title>Keyword Planner</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/cyborg/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <div class="container my-4">
+    <div class="card shadow-glow">
+      <div class="card-header gradient-header text-center">
+        <h1 class="h4 mb-0">Keyword Planner</h1>
+      </div>
+      <div class="card-body">
+        <div class="header-summary mb-4">
+          <h2>Welcome</h2>
+          <p>Optimize your site's keywords using Search Console, Gemini, and Google Ads data.</p>
+        </div>
+        <form method="POST" action="/process" enctype="multipart/form-data" id="keywordForm" novalidate>
+          <fieldset class="mb-4">
+            <legend class="form-label text-center" style="color: #00b7eb;">Search Console Settings</legend>
+            <div class="mb-3">
+              <label for="site_url" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                title="Enter the Search Console property (e.g., sc-domain:example.com)">
+                Search Console Property
+              </label>            
+              <input type="text" class="form-control" id="site_url" name="site_url" 
+                     placeholder="sc-domain:example.com" 
+                     value="{{ form_data.get('site_url', '') if form_data else '' }}" 
+                     aria-label="Search Console Property" required>
+              <small class="form-text text-muted form-text-sm">The Search Console property to analyze.</small>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <label for="start_date" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Select the start date for Search Console data">
+                  Start Date
+                </label>
+                <input type="date" class="form-control" id="start_date" name="start_date" 
+                       value="{{ form_data.get('start_date', default_start) if form_data else default_start }}" 
+                       max="{{ default_end }}" aria-label="Start Date" required>
+                <small class="form-text text-muted form-text-sm">Start date for data.</small>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <label for="end_date" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Select the end date (must be after start date)">
+                  End Date
+                </label>
+                <input type="date" class="form-control" id="end_date" name="end_date" 
+                       value="{{ form_data.get('end_date', default_end) if form_data else default_end }}" 
+                       max="{{ default_end }}" aria-label="End Date" required>
+                <small class="form-text text-muted form-text-sm">End date for data.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="row_limit" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                     title="Set the maximum number of keywords to retrieve (1-1000)">
+                Row Limit (1-1000)
+              </label>
+              <input type="number" class="form-control" id="row_limit" name="row_limit" 
+                     value="{{ form_data.get('row_limit', '50') if form_data else '50' }}" 
+                     min="1" max="1000" aria-label="Row Limit" required>
+              <small class="form-text text-muted form-text-sm">Max keywords from Search Console.</small>
+            </div>
+          </fieldset>
+          <fieldset class="mb-4">
+            <legend class="form-label">Refinement Settings</legend>
+            <div class="row">
+              <div class="col-lg-4 mb-3">
+                <label for="iterations" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Number of refinement iterations (1-10)">
+                  Iterations (1-10)
+                </label>
+                <select class="form-select" id="iterations" name="iterations" aria-label="Iterations" required>
+                  {% for i in range(1, 11) %}
+                  <option value="{{ i }}" {% if form_data and form_data.get('iterations') == i|string %}selected{% endif %}>
+                    {{ i }}
+                  </option>
+                  {% endfor %}
+                </select>
+                <small class="form-text text-muted form-text-sm">Number of refinement rounds.</small>
+              </div>
+              <div class="col-lg-4 mb-3">
+                <label for="base_keywords_per_iteration" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Keywords to refine per iteration (1-20)">
+                  Base Keywords/Iteration (1-20)
+                </label>
+                <input type="number" class="form-control" id="base_keywords_per_iteration" name="base_keywords_per_iteration" 
+                       value="{{ form_data.get('base_keywords_per_iteration', '10') if form_data else '10' }}" 
+                       min="1" max="20" aria-label="Base Keywords" required>
+                <small class="form-text text-muted form-text-sm">Keywords per iteration.</small>
+              </div>
+              <div class="col-lg-4 mb-3">
+                <label for="output_limit" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Maximum keywords in final output (1-200)">
+                  Output Limit (1-200)
+                </label>
+                <input type="number" class="form-control" id="output_limit" name="output_limit" 
+                       value="{{ form_data.get('output_limit', '50') if form_data else '50' }}" 
+                       min="1" max="200" aria-label="Output Limit" required>
+                <small class="form-text text-muted form-text-sm">Final keyword count.</small>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4 mb-3">
+                <label for="max_clusters" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Maximum number of keyword clusters (1-10)">
+                  Max Clusters (1-10)
+                </label>
+                <input type="number" class="form-control" id="max_clusters" name="max_clusters" 
+                       value="{{ form_data.get('max_clusters', '3') if form_data else '3' }}" 
+                       min="1" max="10" aria-label="Max Clusters" required>
+                <small class="form-text text-muted form-text-sm">Max keyword clusters.</small>
+              </div>
+              <div class="col-lg-4 mb-3">
+                <label for="num_variations" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Number of new keyword variations per iteration (1-50)">
+                  Variations/Iteration (1-50)
+                </label>
+                <input type="number" class="form-control" id="num_variations" name="num_variations" 
+                       value="{{ form_data.get('num_variations', '10') if form_data else '10' }}" 
+                       min="1" max="50" aria-label="Num Variations" required>
+                <small class="form-text text-muted form-text-sm">New keywords generated per iteration.</small>
+              </div>
+              <div class="col-lg-4 mb-3">
+                <label for="num_results" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Number of competitor pages to crawl (1-20)">
+                  Competitor Pages (1-20)
+                </label>
+                <input type="number" class="form-control" id="num_results" name="num_results" 
+                       value="{{ form_data.get('num_results', '20') if form_data else '10' }}" 
+                       min="1" max="20" aria-label="Num Results" required>
+                <small class="form-text text-muted form-text-sm">Pages crawled for gap analysis.</small>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6 mb-3">
+                <label for="min_words" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Minimum words per keyword (1+)">
+                  Min Words (1+)
+                </label>
+                <input type="number" class="form-control" id="min_words" name="min_words" 
+                       value="{{ form_data.get('min_words', '2') if form_data else '2' }}" 
+                       min="1" aria-label="Min Words" required>
+                <small class="form-text text-muted form-text-sm">Min length for generated keywords.</small>
+              </div>
+              <div class="col-lg-6 mb-3">
+                <label for="max_words" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Maximum words per keyword (must be >= min_words)">
+                  Max Words (>= Min)
+                </label>
+                <input type="number" class="form-control" id="max_words" name="max_words" 
+                       value="{{ form_data.get('max_words', '5') if form_data else '5' }}" 
+                       min="1" aria-label="Max Words" required>
+                <small class="form-text text-muted form-text-sm">Max length for generated keywords.</small>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset class="mb-4">
+            <legend class="form-label text-center" style="color: #00b7eb;">Keyword Generation Methods</legend>
+            <div class="row">
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_synonyms" name="use_synonyms" 
+                       {% if form_data and form_data.get('use_synonyms') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_synonyms" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Generate keywords using synonyms">Synonyms</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_questions" name="use_questions" 
+                       {% if form_data and form_data.get('use_questions') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_questions" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Generate question-based keywords">Questions</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_clustering" name="use_clustering" 
+                       {% if form_data and form_data.get('use_clustering') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_clustering" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Generate keywords via semantic clustering">Clustering</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_modifiers" name="use_modifiers" 
+                       {% if form_data and form_data.get('use_modifiers') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_modifiers" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Add modifiers like 'best' or 'cheap'">Modifiers</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_locations" name="use_locations" 
+                       {% if form_data and form_data.get('use_locations') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_locations" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Add location-specific terms">Locations</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_seasons" name="use_seasons" 
+                       {% if form_data and form_data.get('use_seasons') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_seasons" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Add seasonal variations">Seasons</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_intents" name="use_intents" 
+                       {% if form_data and form_data.get('use_intents') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_intents" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Generate intent-driven keywords">Intents</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_combinations" name="use_combinations" 
+                       {% if form_data and form_data.get('use_combinations') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_combinations" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Combine words with additional terms">Combinations</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_gemini_synonyms" name="use_gemini_synonyms" 
+                       {% if form_data and form_data.get('use_gemini_synonyms') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_gemini_synonyms" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Use Gemini for synonym generation">Gemini Synonyms</label>
+              </div>
+              <div class="col-lg-4 mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="use_negative_avoidance" name="use_negative_avoidance" 
+                       {% if form_data and form_data.get('use_negative_avoidance') == 'on' %}checked{% endif %}>
+                <label class="form-check-label" for="use_negative_avoidance" data-bs-toggle="tooltip" data-bs-placement="top" 
+                       title="Avoid overused site terms (requires Content Crawl URL)">Negative Avoidance</label>
+              </div>
+            </div>
+            <small class="form-text text-muted form-text-sm mt-2" style="display: block; text-align: center;">
+              Select methods to generate keyword variations (default Gemini gap analysis always included).
+            </small>
+          </fieldset>
+          <fieldset class="mb-4">
+            <legend class="form-label text-center" style="color: #00b7eb;">Scoring Weights (Sum to 100%)</legend>
+            <div class="row g-2">
+              <div class="col">
+                <label for="weight_volume" data-bs-toggle="tooltip" data-bs-placement="top" title="Weight for search volume (0-100)">
+                  Volume
+                </label>
+                <input type="number" class="form-control" id="weight_volume" name="weight_volume" 
+                       value="{{ form_data.get('weight_volume', '30') if form_data else '30' }}" 
+                       min="0" max="100" aria-label="Volume Weight" required>
+                <small class="form-text text-muted form-text-sm">Higher search volume (Rec: 30).</small>
+              </div>
+              <div class="col">
+                <label for="weight_competition" data-bs-toggle="tooltip" data-bs-placement="top" title="Weight for competition (0-100)">
+                  Comp.
+                </label>
+                <input type="number" class="form-control" id="weight_competition" name="weight_competition" 
+                       value="{{ form_data.get('weight_competition', '20') if form_data else '20' }}" 
+                       min="0" max="100" aria-label="Competition Weight" required>
+                <small class="form-text text-muted form-text-sm">Lower competition (Rec: 20).</small>
+              </div>
+              <div class="col">
+                <label for="weight_ctr" data-bs-toggle="tooltip" data-bs-placement="top" title="Weight for click-through rate (0-100)">
+                  CTR
+                </label>
+                <input type="number" class="form-control" id="weight_ctr" name="weight_ctr" 
+                       value="{{ form_data.get('weight_ctr', '20') if form_data else '20' }}" 
+                       min="0" max="100" aria-label="CTR Weight" required>
+                <small class="form-text text-muted form-text-sm">Higher CTR (Rec: 20).</small>
+              </div>
+              <div class="col">
+                <label for="weight_position" data-bs-toggle="tooltip" data-bs-placement="top" title="Weight for position (0-100)">
+                  Pos.
+                </label>
+                <input type="number" class="form-control" id="weight_position" name="weight_position" 
+                       value="{{ form_data.get('weight_position', '20') if form_data else '20' }}" 
+                       min="0" max="100" aria-label="Position Weight" required>
+                <small class="form-text text-muted form-text-sm">Higher rankings (Rec: 20).</small>
+              </div>
+              <div class="col">
+                <label for="weight_quality" data-bs-toggle="tooltip" data-bs-placement="top" title="Weight for quality score (0-100)">
+                  Qual.
+                </label>
+                <input type="number" class="form-control" id="weight_quality" name="weight_quality" 
+                       value="{{ form_data.get('weight_quality', '10') if form_data else '10' }}" 
+                       min="0" max="100" aria-label="Quality Weight" required>
+                <small class="form-text text-muted form-text-sm">Quality scores (Rec: 10).</small>
+              </div>
+            </div>
+            <small class="form-text text-muted form-text-sm mt-2" style="display: block; text-align: center;">
+              Weights for ranking keywords (must sum to 100; additional metrics weighted automatically).
+            </small>
+          </fieldset>
+          <fieldset class="mb-4">
+            <legend class="form-label text-center" style="color: #00b7eb;">Crawling Settings</legend>
+            <div class="mb-3">
+              <label for="content_crawl_url" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top" 
+                     title="Enter the URL to crawl for existing site content (optional)">
+                Content Crawl URL (Optional)
+              </label>
+              <input type="url" class="form-control" id="content_crawl_url" name="content_crawl_url" 
+                     placeholder="https://your-site.com" 
+                     value="{{ form_data.get('content_crawl_url', '') if form_data else '' }}" 
+                     aria-label="Content Crawl URL">
+              <small class="form-text text-muted form-text-sm">URL to crawl for site content to check overlap (leave blank if not needed).</small>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="respect_robots_txt" name="respect_robots_txt" 
+                     {% if form_data and form_data.get('respect_robots_txt') == 'on' %}checked{% endif %} checked>
+              <label class="form-check-label" for="respect_robots_txt" data-bs-toggle="tooltip" data-bs-placement="top" 
+                     title="Respect robots.txt rules when crawling (default: on)">
+                Respect Robots.txt
+              </label>
+              <small class="form-text text-muted form-text-sm">If checked, adheres to site robots.txt restrictions.</small>
+            </div>
+          </fieldset>
+          <div class="mb-4 form-check">
+            <input type="checkbox" class="form-check-input" id="enable_logging" name="enable_logging" 
+                   {% if form_data and form_data.get('enable_logging') == 'on' %}checked{% endif %}>
+            <label class="form-check-label" for="enable_logging">Enable Logging & Debugging</label>
+            <small class="form-text text-muted form-text-sm">Enable detailed logging.</small>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-neon btn-lg" id="submitBtn">Process Keywords</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% if errors %}
+      <div class="alert alert-danger mt-3">
+        <h5 class="alert-heading">Errors</h5>
+        <ul>
+          {% for error in errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      const form = document.getElementById('keywordForm');
+      const submitBtn = document.getElementById('submitBtn');
+      form.addEventListener('submit', function () {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Processing...';
+      });
+    });
+  </script>
+</body>
+<br>
+</html>

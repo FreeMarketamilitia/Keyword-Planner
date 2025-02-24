@@ -1,0 +1,278 @@
+body {
+    background: url('https://www.transparenttextures.com/patterns/stardust.png') #1a1a1a;
+    font-family: 'Orbitron', sans-serif;
+    color: #e0e0e0;
+}
+
+.card {
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 15px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.card-header {
+    border-bottom: 1px solid #555;
+    padding: 1rem;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.gradient-header {
+    background: linear-gradient(135deg, #8a2be2, #2c2c2c);
+    border-radius: 15px 15px 0 0;
+}
+
+.shadow-glow {
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+    transition: box-shadow 0.3s ease;
+}
+
+.shadow-glow:hover {
+    box-shadow: 0 0 25px rgba(138, 43, 226, 0.7);
+}
+
+.form-label {
+    font-weight: 700;
+    color: #e0e0e0;
+}
+
+.form-control, .form-select {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    color: #e0e0e0;
+    padding-right: 2rem; /* Space for custom arrow in select */
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #3a3a3a;
+    border-color: #8a2be2;
+    box-shadow: 0 0 5px rgba(138, 43, 226, 0.5);
+    color: #e0e0e0;
+}
+
+.btn-neon {
+    background-color: #8a2be2;
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-neon:hover {
+    background-color: #00b7eb;
+    box-shadow: 0 0 15px rgba(0, 183, 235, 0.8);
+    color: #fff;
+}
+
+.table {
+    color: #e0e0e0;
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #444;
+}
+
+.table-responsive {
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.table-responsive table {
+    width: 100%;
+}
+
+.table-responsive thead th {
+    position: sticky;
+    top: 0;
+    background-color: #2c2c2c;
+    z-index: 2;
+    color: #e0e0e0;
+    border-bottom: 2px solid #8a2be2;
+}
+
+.alert-danger {
+    background-color: #ff4444;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
+
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+/* Custom file upload styles */
+.custom-file-upload {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.file-input {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.custom-file-upload .btn-neon {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.custom-file-upload:hover .btn-neon {
+    background-color: #00b7eb !important;
+    box-shadow: 0 0 15px rgba(0, 183, 235, 0.8) !important;
+    color: #fff !important;
+}
+
+/* Smaller explanatory text */
+.form-text-sm {
+    font-size: 0.75rem;
+}
+
+/* Header and results container styling */
+.header-summary {
+    background-color: #2c2c2c;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.header-summary h2 {
+    color: #8a2be2;
+    margin-bottom: 0.5rem;
+}
+
+.header-summary p {
+    color: #e0e0e0;
+    margin: 0;
+}
+
+.config-summary {
+    background-color: #2c2c2c;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.config-summary h5 {
+    color: #8a2be2;
+    margin-bottom: 0.75rem;
+}
+
+.config-summary li {
+    margin-bottom: 0.5rem;
+    color: #e0e0e0;
+}
+
+.results-container {
+    background-color: #3a3a3a;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.results-container p {
+    margin-bottom: 0.75rem;
+    color: #e0e0e0;
+}
+
+/* Pagination styling */
+.pagination {
+    margin: 1rem 0;
+    justify-content: center;
+}
+
+.pagination .page-link {
+    color: #8a2be2;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #8a2be2;
+    border-color: #8a2be2;
+    color: #fff;
+}
+
+.pagination .page-link:hover {
+    background-color: #6a1b9a;
+    color: #fff;
+}
+
+/* Custom Tooltip Styling */
+.tooltip-inner {
+    background-color: #2c2c2c;
+    color: #00b7eb; /* Neon cyan text */
+    border: 1px solid #8a2be2; /* Neon purple border */
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.5); /* Glow effect */
+    font-family: 'Orbitron', sans-serif;
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-bottom .tooltip-arrow::before,
+.bs-tooltip-left .tooltip-arrow::before,
+.bs-tooltip-right .tooltip-arrow::before {
+    border-color: #8a2be2; /* Neon purple arrow */
+}
+
+/* Custom Select/Dropdown Styling */
+.form-select {
+    position: relative;
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #3a3a3a url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%238a2be2" viewBox="0 0 16 16"><path d="M8 12L0 4h16z"/></svg>') no-repeat right 0.75rem center/12px 12px;
+    /* Neon purple arrow */
+}
+
+.form-select:hover {
+    border-color: #8a2be2;
+    box-shadow: 0 0 5px rgba(0, 183, 235, 0.5);
+}
+
+.form-select option {
+    background-color: #2c2c2c; /* Dark background for options */
+    color: #e0e0e0;
+}
+
+/* Ensure fieldset legends match theme */
+fieldset legend {
+    color: #8a2be2;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Add to existing style.css */
+.section-title {
+    color: #00b7eb;
+    text-align: left;
+}
+
+/* Ensure small text centers properly when needed */
+.text-center {
+    text-align: center;
+}
+
+.d-block {
+    display: block;
+}
